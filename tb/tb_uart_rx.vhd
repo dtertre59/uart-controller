@@ -37,7 +37,7 @@ end tb_uart_rx;
 
 architecture tb of tb_uart_rx is
     
-    constant MULTIPLIER : integer := 2;
+    constant MULTIPLIER : integer :=4;
     constant CLK_PERIOD : time := 10 ns;
     constant BIT_TIME   : time := (CLK_PERIOD * MULTIPLIER) * MULTIPLIER;  -- 1 UART bit = 2 clock periods
     
@@ -130,13 +130,16 @@ begin
         reset_tb <= '0';
         
         -- to Sync with baud
-        wait for 40 ns;
+        wait for 45 ns;
 
         -- Send one byte
         send_uart_byte(rx_serial_tb, x"55");
 
         -- Wait until RX says data is valid
-        wait until rx_valid_tb = '1';
+        loop
+            wait until rising_edge(clk_tb);
+            exit when rx_valid_tb = '1';
+        end loop;
 
         -- Check received byte
         assert rx_data_tb = x"55"
@@ -153,7 +156,10 @@ begin
         -- Send another byte
         send_uart_byte(rx_serial_tb, x"A3");
 
-        wait until rx_valid_tb = '1';
+        loop
+            wait until rising_edge(clk_tb);
+            exit when rx_valid_tb = '1';
+        end loop;
 
         assert rx_data_tb = x"A3"
             report "ERROR: received byte is not 0xA3"
