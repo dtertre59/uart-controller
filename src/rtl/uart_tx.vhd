@@ -172,6 +172,9 @@ begin
                         
                         end if;
                     end if;
+                
+                when others =>
+                    next_state_reg <= IDLE;
 
                 end case;
         end process;
