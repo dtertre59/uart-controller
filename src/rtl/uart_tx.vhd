@@ -39,9 +39,9 @@ entity uart_tx is
         clk : in STD_LOGIC;
         reset : in STD_LOGIC;
         baud_tick : in STD_LOGIC;
-        tx_valid : in STD_LOGIC;
+        tx_valid : in STD_LOGIC; -- input data is valid and can be accepted
         tx_data : in STD_LOGIC_VECTOR (7 downto 0);
-        tx_serial : out STD_LOGIC;
+        serial_tx : out STD_LOGIC;
         tx_ready : out STD_LOGIC); -- tx_ready pulses high when input data is accepted
 end uart_tx;
 
@@ -86,13 +86,13 @@ begin
             next_oversampling_counter <= oversampling_counter;
 
             -- Out default values
-            tx_serial <= '1';
+            serial_tx <= '1';
             tx_ready <= '0';
 
             case state_reg is
                 when IDLE =>
                     -- Out
-                    tx_serial <= '1';
+                    serial_tx <= '1';
                     tx_ready <= '0';
 
                     -- comb
@@ -109,7 +109,7 @@ begin
                 -- Transmission armed; start will occur on the next valid baud tick
                 when ARMED =>
                     -- Out
-                    tx_serial <= '1';
+                    serial_tx <= '1';
                     tx_ready <= '0';
                     
                     if baud_tick = '1' then
@@ -119,7 +119,7 @@ begin
               -- Start
                 when START =>
                     -- Out
-                    tx_serial <= '0';
+                    serial_tx <= '0';
                     tx_ready <= '0';
 
                     -- Comb
@@ -138,7 +138,7 @@ begin
 
                 when DATA =>
                     -- Out
-                    tx_serial <= data_reg(bit_reg);
+                    serial_tx <= data_reg(bit_reg);
                     tx_ready <= '0';
 
                     -- Comb
@@ -159,7 +159,7 @@ begin
 
                 when STOP =>
                     -- Out
-                    tx_serial <= '1';
+                    serial_tx <= '1';
                     tx_ready <= '0';
 
                     -- Comb

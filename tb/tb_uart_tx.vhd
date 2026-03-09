@@ -45,7 +45,7 @@ architecture tb of tb_uart_tx is
     signal tx_valid_tb : std_logic := '0';
     signal tx_data_tb : std_logic_vector(7 downto 0):= (others => '0');
 
-    signal tx_serial_tb : std_logic := '0';
+    signal serial_tx_tb : std_logic := '0';
     signal tx_ready_tb : std_logic := '0';
 
 begin
@@ -61,7 +61,7 @@ begin
             baud_tick => baud_tick_tb,
             tx_valid => tx_valid_tb,
             tx_data => tx_data_tb,
-            tx_serial => tx_serial_tb,
+            serial_tx => serial_tx_tb,
             tx_ready => tx_ready_tb
         );
 

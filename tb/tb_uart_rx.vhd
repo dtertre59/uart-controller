@@ -45,7 +45,7 @@ architecture tb of tb_uart_rx is
     signal reset_tb : std_logic := '0';
     signal baud_tick_tb : std_logic := '0';
 
-    signal rx_serial_tb : std_logic := '1';
+    signal serial_rx_tb : std_logic := '1';
     signal rx_ready_tb : std_logic := '0';
 
     signal rx_valid_tb : std_logic := '0';
@@ -64,7 +64,7 @@ begin
             clk => clk_tb,
             reset => reset_tb,
             baud_tick => baud_tick_tb,
-            rx_serial => rx_serial_tb,
+            serial_rx => serial_rx_tb,
             rx_ready => rx_ready_tb,
             rx_valid => rx_valid_tb,
             rx_data => rx_data_tb
@@ -121,7 +121,7 @@ begin
 
     begin
         -- Idle line
-        rx_serial_tb <= '1';
+        serial_rx_tb <= '1';
         rx_ready_tb  <= '0';
 
         -- Reset
@@ -133,7 +133,7 @@ begin
         wait for 45 ns;
 
         -- Send one byte
-        send_uart_byte(rx_serial_tb, x"55");
+        send_uart_byte(serial_rx_tb, x"55");
 
         -- Wait until RX says data is valid
         loop
@@ -154,7 +154,7 @@ begin
         wait for 30 ns;
 
         -- Send another byte
-        send_uart_byte(rx_serial_tb, x"A3");
+        send_uart_byte(serial_rx_tb, x"A3");
 
         loop
             wait until rising_edge(clk_tb);

@@ -39,10 +39,10 @@ entity uart_rx is
         clk : in STD_LOGIC;
         reset : in STD_LOGIC;
         baud_tick : in STD_LOGIC;
-        rx_serial : in STD_LOGIC;
+        serial_rx : in STD_LOGIC;
 
         rx_ready : in STD_LOGIC; -- RX output data has been consumed
-        rx_valid : out STD_LOGIC;
+        rx_valid : out STD_LOGIC; -- RX output data is valid
         rx_data : out STD_LOGIC_VECTOR (7 downto 0)
     );
 end uart_rx;
@@ -75,7 +75,7 @@ begin
         end if;
     end process;
 
-    process(state_reg, baud_tick, rx_serial, rx_ready, oversampling_counter, bit_reg, data_reg)
+    process(state_reg, baud_tick, serial_rx, rx_ready, oversampling_counter, bit_reg, data_reg)
     begin
         -- default values: prevents latches
         next_state_reg <= state_reg;
@@ -93,7 +93,7 @@ begin
                 rx_valid <= '0';
                 rx_data <= data_reg;
 
-                if rx_serial = '0' then
+                if serial_rx = '0' then
                     -- next_data_reg <= "00000000";
                     next_bit_reg <= 0;
                     next_oversampling_counter <= 0;
@@ -110,7 +110,7 @@ begin
                     if oversampling_counter = (MULTIPLIER / 2) - 1 then -- middle bit time
                         next_oversampling_counter <= 0;
 
-                        if rx_serial = '0' then -- start bit confirmation
+                        if serial_rx = '0' then -- start bit confirmation
                             next_bit_reg <= 0;
                             next_state_reg <= DATA;
                         else -- wrong bit
@@ -129,7 +129,7 @@ begin
                 if baud_tick = '1' then
                     if oversampling_counter = (MULTIPLIER - 1) then
                         next_oversampling_counter <= 0;
-                        next_data_reg(bit_reg) <= rx_serial;
+                        next_data_reg(bit_reg) <= serial_rx;
                         if bit_reg = 7 then
                             -- next_bit_reg <= 0; -- is not necessary
                             next_state_reg <= STOP;
@@ -149,7 +149,7 @@ begin
                     if oversampling_counter = (MULTIPLIER - 1) then
                         next_oversampling_counter <= 0;
 
-                        if rx_serial = '1' then
+                        if serial_rx = '1' then
                             next_state_reg <= DONE;
 
                         else -- discard byte

@@ -81,7 +81,7 @@ begin
             tick => baud_tick
         );
     
-    -- UART RX -- serial_rx is synchronized internally
+    -- UART RX (serial_rx is synchronized internally) --
     
     u_uart_rx : entity work.uart_rx
         generic map(
@@ -91,7 +91,7 @@ begin
             clk => clk,
             reset => rst_sync,
             baud_tick => baud_tick,
-            rx_serial => serial_rx,
+            serial_rx => serial_rx,
             rx_ready => rx_ready,
             rx_valid => rx_valid,
             rx_data => rx_data
@@ -113,7 +113,7 @@ begin
             baud_tick => baud_tick,
             tx_valid => rx_valid,
             tx_data => rx_data,
-            tx_serial => serial_tx,
+            serial_tx => serial_tx,
             tx_ready => rx_ready
         );
 
