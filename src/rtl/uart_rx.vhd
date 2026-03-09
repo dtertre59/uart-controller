@@ -41,7 +41,7 @@ entity uart_rx is
         baud_tick : in STD_LOGIC;
         rx_serial : in STD_LOGIC;
 
-        rx_ready : in STD_LOGIC;
+        rx_ready : in STD_LOGIC; -- RX output data has been consumed
         rx_valid : out STD_LOGIC;
         rx_data : out STD_LOGIC_VECTOR (7 downto 0)
     );

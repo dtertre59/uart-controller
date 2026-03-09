@@ -42,7 +42,7 @@ entity uart_tx is
         tx_valid : in STD_LOGIC;
         tx_data : in STD_LOGIC_VECTOR (7 downto 0);
         tx_serial : out STD_LOGIC;
-        tx_ready : out STD_LOGIC);
+        tx_ready : out STD_LOGIC); -- tx_ready pulses high when input data is accepted
 end uart_tx;
 
 architecture rtl of uart_tx is
@@ -93,7 +93,7 @@ begin
                 when IDLE =>
                     -- Out
                     tx_serial <= '1';
-                    tx_ready <= '1';
+                    tx_ready <= '0';
 
                     -- comb
                     -- Handshake occurs when tx_valid = '1' and tx_ready = '1'
@@ -101,7 +101,7 @@ begin
                         next_data_reg <= tx_data;
                         next_bit_reg <= 0;
                         next_oversampling_counter <= 0;
-
+                        tx_ready <= '1'; -- Input data accepted
                         next_state_reg <= ARMED;
 
                     end if;
