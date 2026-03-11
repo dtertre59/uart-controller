@@ -59,3 +59,7 @@ The UART receiver keeps the received byte valid until it is acknowledged through
 The transmitter accepts input data when tx_valid is asserted and generates a pulse on tx_ready once the byte has been captured.
 
 The design uses oversampling (x16) to improve UART reception reliability.
+
+## Futures
+
+FIFO Advance: using control signal. If is bigger, use Block RAM (BRAM)
