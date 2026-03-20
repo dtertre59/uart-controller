@@ -311,7 +311,6 @@ begin
             report "ERROR: FIFO should not be full at end of simultaneous read/write test"
             severity failure;
 
-        
         report "All FIFO tests passed";
         
         wait;
