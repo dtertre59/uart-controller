@@ -2,9 +2,9 @@
 -- Company: 
 -- Engineer: 
 -- 
--- Create Date: 10.03.2026 16:39:44
+-- Create Date: 21.03.2026 09:26:23
 -- Design Name: 
--- Module Name: fifo_sync - rtl
+-- Module Name: fifo_fwft - rtl
 -- Project Name: 
 -- Target Devices: 
 -- Tool Versions: 
@@ -31,25 +31,24 @@ use IEEE.NUMERIC_STD.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity fifo_sync is
+entity fifo_fwft is
     generic(
         DATA_WIDTH : integer := 8;  -- 1Byte
         DEPTH : integer := 16       -- Buffer max size: 16 Bytes     
     );
-    Port (
-        clk : in STD_LOGIC;
-        rst : in STD_LOGIC;
-        write_en : in STD_LOGIC;
-        write_data : in std_logic_vector(DATA_WIDTH - 1 downto 0);
-        read_en : in STD_LOGIC;
-        read_data : out std_logic_vector(DATA_WIDTH - 1 downto 0);
-        full : out STD_LOGIC;
-        empty : out STD_LOGIC
-    );
-end fifo_sync;
+    Port ( clk : in STD_LOGIC;
+           rst : in STD_LOGIC;
+           write_en : in STD_LOGIC;
+           write_data : in std_logic_vector(DATA_WIDTH - 1 downto 0);
+           read_en : in STD_LOGIC;
+           read_data : out std_logic_vector(DATA_WIDTH - 1 downto 0);
+           full : out STD_LOGIC;
+           empty : out STD_LOGIC
+           );
+end fifo_fwft;
 
-architecture rtl of fifo_sync is
-
+architecture rtl of fifo_fwft is
+    
     -- Buffer (array)
     type memory_type is array (0 to DEPTH - 1) of std_logic_vector(DATA_WIDTH - 1 downto 0);
     signal memory : memory_type;
@@ -59,8 +58,6 @@ architecture rtl of fifo_sync is
     signal read_ptr : integer range 0 to DEPTH - 1 := 0;
     
     signal count : integer range 0 to DEPTH := 0;
-    
-    signal read_data_reg : std_logic_vector(DATA_WIDTH - 1 downto 0) := (others => '0');
 
 begin
 
@@ -70,9 +67,7 @@ begin
             write_ptr <= 0;
             read_ptr <= 0;
             count <= 0;
-            read_data_reg <= (others => '0');
-            
-        
+
         elsif rising_edge(clk) then
             
             -- Write only
@@ -99,9 +94,7 @@ begin
             elsif write_en = '0' and read_en = '1' then
                 
                 -- FIFO is not empty
-                if count > 0 then
-                    read_data_reg <= memory(read_ptr);
-                    
+                if count > 0 then                    
                     -- Update pointer
                     if read_ptr = DEPTH - 1 then
                         read_ptr <= 0;
@@ -134,8 +127,6 @@ begin
                 
                 else -- Count > 0
                     -- Normal simultaneous read and write
-
-                    read_data_reg <= memory(read_ptr);
                     memory(write_ptr) <= write_data;
 
                     -- Read
@@ -165,10 +156,10 @@ begin
     
     -- Out
 
-    -- FIFO Register
-    read_data <= read_data_reg;
+    -- FIFO Show Ahead
+    read_data <= memory(read_ptr) when count > 0 else (others => '0');
 
     empty <= '1' when count = 0 else '0';
     full <= '1' when count = DEPTH else '0';
-    
+
 end rtl;

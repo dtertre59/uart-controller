@@ -22,7 +22,7 @@ The design supports different operating modes and can be used as a simple serial
 
 - **Loopback:** received data is inmediately transmited back. 
 
-- **LOWER case to UPPER case conversion:** received ASCII lowercase characters are converted to uppercase before transmission.
+- **Case Converter:** received ASCII lowercase characters are converted to uppercase before transmission.
 
 ## Modules
 
@@ -34,11 +34,15 @@ The design supports different operating modes and can be used as a simple serial
 
 - **uart_rx (FSM):** UART receiver implemented as a finite state machine with oversampling.
 
-- **uart_processor:** Optional processing stage used to modify received data (e.g., lowercase to uppercase conversion). **TO DO**
+- **fifo_sync:** Standard synchronous FIFO with registered output. The output data is updated only when a valid read operation (read_en) occurs, resulting in a one-cycle latency. This approach provides predictable timing and simplifies control logic.
+
+- **fifo_fwft:** Show-ahead FIFO (First-Word Fall-Through, FWFT). The first available data word is continuously presented at the output as soon as the FIFO is not empty, without requiring an explicit read request. This zero-latency behavior is well suited for high-throughput streaming and pipelined architectures.
+
+- **case_converter:** processing module that performs case conversion on received data, toggling characters between uppercase and lowercase. This module can be integrated as a configurable stage in the processing pipeline to apply basic data transformations.
 
 - **uart_loopback_top:** Top-level module implementing a simple UART loopback. Received bytes are immediately transmitted back.
 
-- **uart_uppercase_top:** Top-level module that processes received characters and converts lowercase ASCII letters to uppercase before transmission.
+- **uart_case_converter_top:** Top-level module that processes received characters and converts lowercase ASCII letters to uppercase before transmission.
 
 ## Communication parameters
 
